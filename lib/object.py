@@ -9,8 +9,9 @@ class Button:
     position, 
     size,
     color={'foreground': (0, 0, 0), 'background': None},
-    text=DEFAULT_TEXT
-    border={'width': 0, 'radius': [-1, -1, -1, -1]},
+    text=DEFAULT_TEXT,
+    border_width=0,
+    border_radius=[-1, -1, -1, -1],
     on_click=callback
   ):
     self.surface = Surface(size)
@@ -20,8 +21,8 @@ class Button:
     self.color = color
     self.font = font(text["font"], text["size"], text["bold"], text["italic"])
     self.text_change(text)
-    self.border_width = border['width']
-    self.border_rad = border['radius']
+    self.border_width = border_width
+    self.border_rad = border_radius
     self.click_event = on_click
     
     self.tmp = False
@@ -51,12 +52,12 @@ class Button:
       return
     mpos = mouse.get_pos()
     for event in events:
-      match event.type:
-        case MOUSEBUTTONDOWN:
+      match [event.type]:
+        case [MOUSEBUTTONDOWN]:
           if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
             if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
               tmp = True
-        case MOUSEBUTTONUP:
+        case [MOUSEBUTTONUP]:
           if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
             if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
               if tmp:

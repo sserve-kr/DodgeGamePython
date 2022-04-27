@@ -77,7 +77,7 @@ class Label:
   ):
     self.super_surf = supersurf
     self.font = font.SysFont(font_name, size, False, False)
-    self.center_position = [axis+(self.font.size()//2)]
+    self.center_position = [axis+(self.font.size(text)[position.index(axis)]//2) for axis in position]
     self.color = color
     self.back_color = back_color
 

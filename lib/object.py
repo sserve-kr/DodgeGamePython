@@ -9,12 +9,14 @@ class Button:
     position,
     size,
     on_click,
+    on_click_args,  # dictionary
     color={'foreground': (0, 0, 0), 'background': None},
     text=DEFAULT_TEXT,
-    border_width=0,
+    border_width=1,
     border_radius=[-1, -1, -1, -1],
   ):
     self.surface = Surface(size)
+    self.surface.fill((255, 255, 255) if not color['background'] else color['background'])
     self.position = position
     self.size = size
     self.super_surf = supersurf
@@ -23,13 +25,14 @@ class Button:
     self.border_width = border_width
     self.border_rad = border_radius
     self.click_event = on_click
+    self.click_args = on_click_args
     
     self.tmp = False
   
   def draw(self):
     draw.rect(
       self.surface, 
-      self.color, 
+      self.color['foreground'], 
       [0, 0, self.size[0], self.size[1]], 
       width=self.border_width,
       border_top_left_radius=self.border_rad[0],
@@ -45,16 +48,16 @@ class Button:
       return
     mpos = mouse.get_pos()
     for event in events:
-      match [event.type]:
-        case [MOUSEBUTTONDOWN]:
-          if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
-            if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
-              tmp = True
-        case [MOUSEBUTTONUP]:
-          if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
-            if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
-              if tmp:
-                self.click_event()
+      # apply match case
+      if event.type == MOUSEBUTTONDOWN:
+        if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
+          if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
+            self.tmp = True
+      if event.type == MOUSEBUTTONUP:
+        if self.position[0] <= mpos[0] <= self.position[0]+self.size[0]:
+          if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
+            if self.tmp:
+              self.click_event(self.click_args)
 
 
 class Label:
@@ -71,14 +74,12 @@ class Label:
     self.super_surf = supersurf
     self.font = font.SysFont(font_name, size, False, False)
     self.position = position
-    self.center_position = [axis+(self.font.size(text)[self.position.index(axis)]//2) for axis in self.position]
     self.color = color
     self.back_color = back_color
     self.text_set(text)
 
   def text_set(self, text):
-    self.center_position = [axis+(self.font.size(text)[self.position.index(axis)]//2) for axis in self.position]
     self.surface = self.font.render(text, True, self.color, self.back_color)
 
   def draw(self):
-    self.super_surf.blit(self.surface, self.center_position)
+    self.super_surf.blit(self.surface, self.surface.get_rect(center=self.position))

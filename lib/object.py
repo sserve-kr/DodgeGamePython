@@ -1,6 +1,6 @@
 from pygame import *
 
-DEFAULT_TEXT = {"text": "DefaultText", "font": None, "size": 16, "bold": False, "italic": False, "antialiase": True}
+DEFAULT_TEXT = {"text": "DefaultText", "font": None, "size": 16}
 
 class Button:
   def __init__(
@@ -8,19 +8,18 @@ class Button:
     supersurf,
     position,
     size,
+    on_click,
     color={'foreground': (0, 0, 0), 'background': None},
     text=DEFAULT_TEXT,
     border_width=0,
     border_radius=[-1, -1, -1, -1],
-    on_click=callback
   ):
     self.surface = Surface(size)
     self.position = position
     self.size = size
     self.super_surf = supersurf
     self.color = color
-    self.font = font.SysFont(text["font"], text["size"], text["bold"], text["italic"])
-    self.text_change(text)
+    self.label = Label(self.surface, (size[0]//2, size[1]//2), text['size'], color['background'], color['foreground'], text['font'], text['text'])
     self.border_width = border_width
     self.border_rad = border_radius
     self.click_event = on_click
@@ -31,21 +30,15 @@ class Button:
     draw.rect(
       self.surface, 
       self.color, 
-      [0, 0, size[0], size[1]], 
+      [0, 0, self.size[0], self.size[1]], 
       width=self.border_width,
       border_top_left_radius=self.border_rad[0],
       border_top_right_radius=self.border_rad[1],
       border_bottom_left_radius=self.border_rad[2],
       border_bottom_right_radius=self.border_rad[3]
     )
-    self.surface.blit(self.text, self.text.get_rect())
+    self.label.draw()
     self.super_surf.blit(self.surface, self.position)
-  
-  def text_change(self, text=DEFAULT_TEXT):
-    self.text = self.font.render(text["text"], text["antialiase"], self.color['foreground'], background=self.color['background'])
-    temp_rect = self.text.get_rect()
-    temp_rect.centerx = self.size[0]//2
-    temp_rect.centery = self.size[1]//2
   
   def event_check(self, events):
     if not events:
@@ -77,15 +70,15 @@ class Label:
   ):
     self.super_surf = supersurf
     self.font = font.SysFont(font_name, size, False, False)
-    self.center_position = [axis+(self.font.size(text)[position.index(axis)]//2) for axis in position]
+    self.position = position
+    self.center_position = [axis+(self.font.size(text)[self.position.index(axis)]//2) for axis in self.position]
     self.color = color
     self.back_color = back_color
-
-    self.surface = self.font.render(text, True, self.color, self.back_color)
+    self.text_set(text)
 
   def text_set(self, text):
+    self.center_position = [axis+(self.font.size(text)[self.position.index(axis)]//2) for axis in self.position]
     self.surface = self.font.render(text, True, self.color, self.back_color)
 
-
   def draw(self):
-    self.super_surf.blit(self.surface)
+    self.super_surf.blit(self.surface, self.center_position)

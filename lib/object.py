@@ -5,8 +5,8 @@ DEFAULT_TEXT = {"text": "DefaultText", "font": None, "size": 16, "bold": False, 
 class Button:
   def __init__(
     self, 
-    supersurf, 
-    position, 
+    supersurf,
+    position,
     size,
     color={'foreground': (0, 0, 0), 'background': None},
     text=DEFAULT_TEXT,
@@ -19,7 +19,7 @@ class Button:
     self.size = size
     self.super_surf = supersurf
     self.color = color
-    self.font = font(text["font"], text["size"], text["bold"], text["italic"])
+    self.font = font.SysFont(text["font"], text["size"], text["bold"], text["italic"])
     self.text_change(text)
     self.border_width = border_width
     self.border_rad = border_radius
@@ -62,3 +62,30 @@ class Button:
             if self.position[1] <= mpos[1] <= self.position[1]+self.size[1]:
               if tmp:
                 self.click_event()
+
+
+class Label:
+  def __init__(
+    self,
+    supersurf,
+    position,
+    size,
+    back_color,
+    color,
+    font_name=None,
+    text="DefaultText"
+  ):
+    self.super_surf = supersurf
+    self.font = font.SysFont(font_name, size, False, False)
+    self.center_position = [axis+(self.font.size()//2)]
+    self.color = color
+    self.back_color = back_color
+
+    self.surface = self.font.render(text, True, self.color, self.back_color)
+
+  def text_set(self, text):
+    self.surface = self.font.render(text, True, self.color, self.back_color)
+
+
+  def draw(self):
+    self.super_surf.blit(self.surface)

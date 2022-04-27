@@ -1,4 +1,7 @@
 import pygame
+from lib import scene
+from lib import object
+from lib import base
 
 pygame.init()
 
